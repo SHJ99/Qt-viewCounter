@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>박씨가 서씨를 갈아만든 조회수 추출기</string>
+   <string>Youtube view counter with Qt</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
