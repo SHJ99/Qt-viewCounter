@@ -11,6 +11,11 @@ class Widget;
 }
 QT_END_NAMESPACE
 
+struct YoutubeData {
+    QString title;
+    QString viewCount;
+};
+
 class Widget : public QWidget
 {
     Q_OBJECT
@@ -21,7 +26,7 @@ public:
 
     QSslSocket socket;
 
-    QString parser(const QString &str);
+    YoutubeData parser(const QString &html);
 
 public slots:
     void doConneted();

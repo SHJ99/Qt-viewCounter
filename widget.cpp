@@ -17,15 +17,27 @@ Widget::~Widget()
     delete ui;
 }
 
-QString Widget::parser(const QString &str)
+YoutubeData Widget::parser(const QString &html)
 {
-    QRegularExpression regex(R"("viewCount":\{"simpleText":"조회수 ([\d,]+)회"\})");
-    QRegularExpressionMatch match = regex.match(str);
-    if (match.hasMatch()) {
-        QString viewCount = match.captured(1);
-        return viewCount.replace(",", "");
+    YoutubeData data;
+
+    QRegularExpression title_regex(R"(<title>([^<]+)</title>)");
+    QRegularExpressionMatch title_match = title_regex.match(html);
+    if (title_match.hasMatch()) {
+        data.title = title_match.captured(1).trimmed();
+
+        if (data.title.endsWith(" - YouTube")) {
+            data.title.chop(10);
+        }
     }
-    return "";
+
+    QRegularExpression regex(R"("viewCount":\{"simpleText":"조회수 ([\d,]+)회"\})");
+    QRegularExpressionMatch match = regex.match(html);
+    if (match.hasMatch()) {
+        data.viewCount = match.captured(1).replace(",", "");
+    }
+
+    return data;
 }
 
 void Widget::on_pbRequest_clicked()
@@ -33,7 +45,6 @@ void Widget::on_pbRequest_clicked()
     QString host = "www.youtube.com";
     socket.connectToHostEncrypted(host, 443);
 }
-
 
 void Widget::on_pbClear_clicked()
 {
@@ -44,7 +55,6 @@ void Widget::doConneted()
 {
     QString msg = "connect "+ socket.peerAddress().toString();
     ui->leStatus->clear();
-    //ui->leStatus->insert(msg);
 
     QString url = ui->leHost->text();
     QString vid;
@@ -74,14 +84,15 @@ void Widget::doDisconneted()
 void Widget::doReadyread()
 {
     QByteArray response = socket.readAll();
-    //while (socket.waitForReadyRead(5000)) { response += socket.readAll();  }
-
     QString html = QString::fromUtf8(response);
-    QString viewer = parser(html);
+    YoutubeData data = parser(html);
 
-    if(!viewer.isEmpty()){
-        ui->teView->insertPlainText(viewer);
+    if(!data.title.isEmpty()){
+        ui->teView->insertPlainText(data.title + " ");
+
     }
-    //else{ ui->teView->insertPlainText("fail viewer count"); }
+    if(!data.viewCount.isEmpty()){
+        ui->teView->insertPlainText(data.viewCount + "회 \n");
+    }
 }
 
