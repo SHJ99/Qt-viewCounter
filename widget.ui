@@ -21,7 +21,7 @@
        <item>
         <widget class="QLineEdit" name="leHost">
          <property name="text">
-          <string>www.youtube.com</string>
+          <string>www.youtube.com/watch?v=dQw4w9WgXcQ</string>
          </property>
         </widget>
        </item>
